@@ -18,36 +18,32 @@ import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.converter.StringToBigDecimalConverter;
 import com.vaadin.flow.data.converter.StringToIntegerConverter;
 import com.vaadin.flow.data.value.ValueChangeMode;
-import works.ss.dynamic.pwa.backend.data.Availability;
-import works.ss.dynamic.pwa.backend.data.Category;
-import works.ss.dynamic.pwa.backend.data.Product;
+import org.apache.commons.lang3.StringUtils;
+import works.ss.dynamic.pwa.backend.entity.Availability;
+import works.ss.dynamic.pwa.backend.entity.BaseEntity;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 
 /**
  * A form for editing a single product.
  */
-public class ProductForm extends Div {
+public class BaseEntityForm extends Div {
 
     private VerticalLayout content;
 
-    private TextField productName;
-    private TextField price;
-    private TextField stockCount;
-    private Select<Availability> availability;
-    private CheckboxGroup<Category> category;
+    private TextField entityName;
     private Button save;
     private Button discard;
     private Button cancel;
     private Button delete;
 
     private SampleCrudLogic viewLogic;
-    private Binder<Product> binder;
-    private Product currentProduct;
+    private Binder<BaseEntity> binder;
+    private BaseEntity currentEntity;
 
     private static class PriceConverter extends StringToBigDecimalConverter {
 
@@ -89,7 +85,7 @@ public class ProductForm extends Div {
         }
     }
 
-    public ProductForm(SampleCrudLogic sampleCrudLogic) {
+    public BaseEntityForm(SampleCrudLogic sampleCrudLogic) {
         setClassName("product-form");
 
         content = new VerticalLayout();
@@ -98,45 +94,13 @@ public class ProductForm extends Div {
 
         viewLogic = sampleCrudLogic;
 
-        productName = new TextField("Product name");
-        productName.setWidth("100%");
-        productName.setRequired(true);
-        productName.setValueChangeMode(ValueChangeMode.EAGER);
-        content.add(productName);
+        entityName = new TextField("Product name");
+        entityName.setWidth("100%");
+        entityName.setRequired(true);
+        entityName.setValueChangeMode(ValueChangeMode.EAGER);
+        content.add(entityName);
+        binder = new BeanValidationBinder<>(BaseEntity.class);
 
-        price = new TextField("Price");
-        price.setSuffixComponent(new Span("€"));
-        price.addThemeVariants(TextFieldVariant.LUMO_ALIGN_RIGHT);
-        price.setValueChangeMode(ValueChangeMode.EAGER);
-
-        stockCount = new TextField("In stock");
-        stockCount.addThemeVariants(TextFieldVariant.LUMO_ALIGN_RIGHT);
-        stockCount.setValueChangeMode(ValueChangeMode.EAGER);
-
-        HorizontalLayout horizontalLayout = new HorizontalLayout(price,
-                stockCount);
-        horizontalLayout.setWidth("100%");
-        horizontalLayout.setFlexGrow(1, price, stockCount);
-        content.add(horizontalLayout);
-
-        availability = new Select<>();
-        availability.setLabel("Availability");
-        availability.setWidth("100%");
-        availability.setItems(Availability.values());
-        content.add(availability);
-
-        category = new CheckboxGroup<>();
-        category.setLabel("Categories");
-        category.setId("category");
-        category.addThemeVariants(CheckboxGroupVariant.LUMO_VERTICAL);
-        content.add(category);
-
-        binder = new BeanValidationBinder<>(Product.class);
-        binder.forField(price).withConverter(new PriceConverter())
-                .bind("price");
-        binder.forField(stockCount).withConverter(new StockCountConverter())
-                .bind("stockCount");
-        binder.bindInstanceFields(this);
 
         // enable/disable save button while editing
         binder.addStatusChangeListener(event -> {
@@ -150,9 +114,9 @@ public class ProductForm extends Div {
         save.setWidth("100%");
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         save.addClickListener(event -> {
-            if (currentProduct != null
-                    && binder.writeBeanIfValid(currentProduct)) {
-                viewLogic.saveProduct(currentProduct);
+            if (currentEntity != null
+                    && binder.writeBeanIfValid(currentEntity)) {
+                viewLogic.saveEntity(currentEntity);
             }
         });
         save.addClickShortcut(Key.KEY_S, KeyModifier.CONTROL);
@@ -160,38 +124,35 @@ public class ProductForm extends Div {
         discard = new Button("Discard changes");
         discard.setWidth("100%");
         discard.addClickListener(
-                event -> viewLogic.editProduct(currentProduct));
+                event -> viewLogic.editEntity(currentEntity));
 
         cancel = new Button("Cancel");
         cancel.setWidth("100%");
-        cancel.addClickListener(event -> viewLogic.cancelProduct());
+        cancel.addClickListener(event -> viewLogic.cancelBaseEntityAction());
         cancel.addClickShortcut(Key.ESCAPE);
         getElement()
-                .addEventListener("keydown", event -> viewLogic.cancelProduct())
+                .addEventListener("keydown", event -> viewLogic.cancelBaseEntityAction())
                 .setFilter("event.key == 'Escape'");
 
         delete = new Button("Delete");
         delete.setWidth("100%");
         delete.addThemeVariants(ButtonVariant.LUMO_ERROR, ButtonVariant.LUMO_PRIMARY);
         delete.addClickListener(event -> {
-            if (currentProduct != null) {
-                viewLogic.deleteProduct(currentProduct);
+            if (currentEntity != null) {
+                viewLogic.deleteEntity(currentEntity);
             }
         });
 
         content.add(save, discard, delete, cancel);
     }
 
-    public void setCategories(Collection<Category> categories) {
-        category.setItems(categories);
-    }
 
-    public void editProduct(Product product) {
-        if (product == null) {
-            product = new Product();
+    public void editEntity(BaseEntity baseEntity) {
+        if (baseEntity == null) {
+            baseEntity = new BaseEntity();
         }
-        delete.setVisible(!product.isNewProduct());
-        currentProduct = product;
-        binder.readBean(product);
+        delete.setVisible(!StringUtils.isBlank(baseEntity.getId()));
+        currentEntity = baseEntity;
+        binder.readBean(baseEntity);
     }
 }

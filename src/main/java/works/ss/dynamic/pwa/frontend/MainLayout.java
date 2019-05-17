@@ -8,7 +8,7 @@ import com.vaadin.flow.router.RouterLayout;
 import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
-import works.ss.dynamic.pwa.frontend.about.AboutView;
+import works.ss.dynamic.pwa.backend.entity.Product;
 import works.ss.dynamic.pwa.frontend.crud.SampleCrudView;
 
 /**
@@ -25,10 +25,10 @@ public class MainLayout extends FlexLayout implements RouterLayout {
         setClassName("main-layout");
 
         menu = new Menu();
-        menu.addView(SampleCrudView.class, SampleCrudView.VIEW_NAME,
-                VaadinIcon.EDIT.create());
-        menu.addView(AboutView.class, AboutView.VIEW_NAME,
-                VaadinIcon.INFO_CIRCLE.create());
+        //TODO iterate base entities and add crud views
+        menu.addView(SampleCrudView.class, "Product", VaadinIcon.INFO.create());
+//        menu.addView(SampleCrudView.class, SampleCrudView.VIEW_NAME,
+//                VaadinIcon.EDIT.create());
 
         add(menu);
     }

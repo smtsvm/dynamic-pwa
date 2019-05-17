@@ -1,4 +1,4 @@
-package works.ss.dynamic.pwa.backend.data;
+package works.ss.dynamic.pwa.backend.entity;
 
 public enum Availability {
     COMING("Coming"), AVAILABLE("Available"), DISCONTINUED("Discontinued");

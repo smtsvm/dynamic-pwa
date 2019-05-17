@@ -10,14 +10,16 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.*;
-import works.ss.dynamic.pwa.backend.DataService;
-import works.ss.dynamic.pwa.backend.data.Product;
+import works.ss.dynamic.pwa.backend.Registry;
+import works.ss.dynamic.pwa.backend.entity.BaseEntity;
+import works.ss.dynamic.pwa.backend.entity.Category;
+import works.ss.dynamic.pwa.backend.entity.Product;
 import works.ss.dynamic.pwa.frontend.MainLayout;
 
 /**
  * A view for performing create-read-update-delete operations on products.
  *
- * See also {@link SampleCrudLogic} for fetching the data, the actual CRUD
+ * See also {@link SampleCrudLogic} for fetching the entity, the actual CRUD
  * operations and controlling the view based on events from outside.
  */
 @Route(value = "Inventory", layout = MainLayout.class)
@@ -25,27 +27,27 @@ import works.ss.dynamic.pwa.frontend.MainLayout;
 public class SampleCrudView extends HorizontalLayout
         implements HasUrlParameter<String> {
 
-    public static final String VIEW_NAME = "Inventory";
-    private ProductGrid grid;
-    private ProductForm form;
+    private BaseEntityGrid grid;
+    private BaseEntityForm form;
     private TextField filter;
 
-    private SampleCrudLogic viewLogic = new SampleCrudLogic(this);
-    private Button newProduct;
+    private SampleCrudLogic viewLogic = new SampleCrudLogic(this,Product.class);
+    private Button newBaseEntity;
 
-    private ProductDataProvider dataProvider = new ProductDataProvider();
+    private BaseEntityDataProvider dataProvider;
+
 
     public SampleCrudView() {
+        dataProvider = new BaseEntityDataProvider(Product.class);
         setSizeFull();
         HorizontalLayout topLayout = createTopBar();
 
-        grid = new ProductGrid();
+        grid = new BaseEntityGrid();
         grid.setDataProvider(dataProvider);
         grid.asSingleSelect().addValueChangeListener(
                 event -> viewLogic.rowSelected(event.getValue()));
 
-        form = new ProductForm(viewLogic);
-        form.setCategories(DataService.get().getAllCategories());
+        form = new BaseEntityForm(viewLogic);
 
         VerticalLayout barAndGridLayout = new VerticalLayout();
         barAndGridLayout.add(topLayout);
@@ -64,21 +66,21 @@ public class SampleCrudView extends HorizontalLayout
     public HorizontalLayout createTopBar() {
         filter = new TextField();
         filter.setPlaceholder("Filter name, availability or category");
-        // Apply the filter to grid's data provider. TextField value is never null
+        // Apply the filter to grid's entity provider. TextField value is never null
         filter.addValueChangeListener(event -> dataProvider.setFilter(event.getValue()));
         filter.addFocusShortcut(Key.KEY_F, KeyModifier.CONTROL);
 
-        newProduct = new Button("New product");
-        newProduct.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        newProduct.setIcon(VaadinIcon.PLUS_CIRCLE.create());
-        newProduct.addClickListener(click -> viewLogic.newProduct());
+        newBaseEntity = new Button("New product");
+        newBaseEntity.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        newBaseEntity.setIcon(VaadinIcon.PLUS_CIRCLE.create());
+        newBaseEntity.addClickListener(click -> viewLogic.newEntiy());
         // CTRL+N will create a new window which is unavoidable
-        newProduct.addClickShortcut(Key.KEY_N, KeyModifier.ALT);
+        newBaseEntity.addClickShortcut(Key.KEY_N, KeyModifier.ALT);
 
         HorizontalLayout topLayout = new HorizontalLayout();
         topLayout.setWidth("100%");
         topLayout.add(filter);
-        topLayout.add(newProduct);
+        topLayout.add(newBaseEntity);
         topLayout.setVerticalComponentAlignment(Alignment.START, filter);
         topLayout.expand(filter);
         return topLayout;
@@ -92,33 +94,30 @@ public class SampleCrudView extends HorizontalLayout
         Notification.show(msg);
     }
 
-    public void setNewProductEnabled(boolean enabled) {
-        newProduct.setEnabled(enabled);
-    }
 
     public void clearSelection() {
         grid.getSelectionModel().deselectAll();
     }
 
-    public void selectRow(Product row) {
+    public void selectRow(BaseEntity row) {
         grid.getSelectionModel().select(row);
     }
 
-    public Product getSelectedRow() {
+    public BaseEntity getSelectedRow() {
         return grid.getSelectedRow();
     }
 
-    public void updateProduct(Product product) {
+    public void updateEntity(BaseEntity product) {
         dataProvider.save(product);
     }
 
-    public void removeProduct(Product product) {
+    public void removeEntity(BaseEntity product) {
         dataProvider.delete(product);
     }
 
-    public void editProduct(Product product) {
+    public void editEntity(BaseEntity product) {
         showForm(product != null);
-        form.editProduct(product);
+        form.editEntity(product);
     }
 
     public void showForm(boolean show) {

@@ -1,37 +1,28 @@
 package works.ss.dynamic.pwa.frontend.crud;
 
 import com.vaadin.flow.component.UI;
-import works.ss.dynamic.pwa.backend.DataService;
-import works.ss.dynamic.pwa.backend.data.Product;
+import works.ss.dynamic.pwa.backend.Registry;
+import works.ss.dynamic.pwa.backend.entity.BaseEntity;
 
 import java.io.Serializable;
 
-/**
- * This class provides an interface for the logical operations between the CRUD
- * view, its parts like the product editor form and the data source, including
- * fetching and saving products.
- *
- * Having this separate from the view makes it easier to test various parts of
- * the system separately, and to e.g. provide alternative views for the same
- * data.
- */
 public class SampleCrudLogic implements Serializable {
 
     private SampleCrudView view;
 
-    public SampleCrudLogic(SampleCrudView simpleCrudView) {
+    private Class clazz;
+
+    public SampleCrudLogic(SampleCrudView simpleCrudView, Class clazz) {
+
+        this.clazz = clazz;
         view = simpleCrudView;
     }
 
     public void init() {
-        editProduct(null);
-        // Hide and disable if not admin
-
-        view.setNewProductEnabled(true);
-
+        editEntity(null);
     }
 
-    public void cancelProduct() {
+    public void cancelBaseEntityAction() {
         setFragmentParameter("");
         view.clearSelection();
     }
@@ -39,72 +30,66 @@ public class SampleCrudLogic implements Serializable {
     /**
      * Update the fragment without causing navigator to change view
      */
-    private void setFragmentParameter(String productId) {
+    private void setFragmentParameter(String baseEntityId) {
         String fragmentParameter;
-        if (productId == null || productId.isEmpty()) {
+        if (baseEntityId == null || baseEntityId.isEmpty()) {
             fragmentParameter = "";
         } else {
-            fragmentParameter = productId;
+            fragmentParameter = baseEntityId;
         }
 
         UI.getCurrent().navigate(SampleCrudView.class, fragmentParameter);
     }
 
-    public void enter(String productId) {
-        if (productId != null && !productId.isEmpty()) {
-            if (productId.equals("new")) {
-                newProduct();
+    public void enter(String baseEntityId) {
+        if (baseEntityId != null && !baseEntityId.isEmpty()) {
+            if (baseEntityId.equals("new")) {
+                newEntiy();
             } else {
                 // Ensure this is selected even if coming directly here from
                 // login
-                try {
-                    int pid = Integer.parseInt(productId);
-                    Product product = findProduct(pid);
-                    view.selectRow(product);
-                } catch (NumberFormatException e) {
-                }
+                    BaseEntity baseEntity= findBaseEntity(baseEntityId);
+                    view.selectRow(baseEntity);
             }
         } else {
             view.showForm(false);
         }
     }
 
-    private Product findProduct(int productId) {
-        return DataService.get().getProductById(productId);
+    private BaseEntity findBaseEntity(String entityId) {
+        return Registry.get().getBaseService().findEntity(clazz, entityId).get();
     }
 
-    public void saveProduct(Product product) {
-        boolean newProduct = product.isNewProduct();
+    public void saveEntity(BaseEntity baseEntity) {
+        boolean isNew = baseEntity.isNewEntity();
         view.clearSelection();
-        view.updateProduct(product);
+        view.updateEntity(baseEntity);
         setFragmentParameter("");
-        view.showSaveNotification(product.getProductName()
-                + (newProduct ? " created" : " updated"));
+
     }
 
-    public void deleteProduct(Product product) {
+    public void deleteEntity(BaseEntity baseEntity) {
         view.clearSelection();
-        view.removeProduct(product);
+        view.removeEntity(baseEntity);
         setFragmentParameter("");
-        view.showSaveNotification(product.getProductName() + " removed");
     }
 
-    public void editProduct(Product product) {
-        if (product == null) {
+    public void editEntity(BaseEntity baseEntity) {
+        if (baseEntity == null) {
             setFragmentParameter("");
         } else {
-            setFragmentParameter(product.getId() + "");
+            setFragmentParameter(baseEntity.getId() + "");
         }
-        view.editProduct(product);
+        view.editEntity(baseEntity);
     }
 
-    public void newProduct() {
+    public void newEntiy() {
         view.clearSelection();
         setFragmentParameter("new");
-        view.editProduct(new Product());
+        view.editEntity(new BaseEntity());
     }
 
-    public void rowSelected(Product product) {
-        editProduct(product);
+    public void rowSelected(BaseEntity baseEntity) {
+        editEntity(baseEntity);
     }
 }

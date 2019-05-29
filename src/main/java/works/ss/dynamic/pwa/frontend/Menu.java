@@ -42,7 +42,6 @@ public class Menu extends FlexLayout {
         top.setDefaultVerticalComponentAlignment(Alignment.CENTER);
         top.setClassName("menu-header");
 
-        Label title = new Label("My CRUD");
 
         // Note! Image resource url is resolved here as it is dependent on the
         // execution mode (development or production) and browser ES level support
@@ -52,7 +51,6 @@ public class Menu extends FlexLayout {
 
         Image image = new Image(resolvedImage, "");
         top.add(image);
-        top.add(title);
         add(top);
 
         // container for the navigation buttons, which are added by addView()

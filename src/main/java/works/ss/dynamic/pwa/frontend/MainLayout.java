@@ -8,15 +8,16 @@ import com.vaadin.flow.router.RouterLayout;
 import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
-import works.ss.dynamic.pwa.backend.entity.Product;
-import works.ss.dynamic.pwa.frontend.crud.SampleCrudView;
+import works.ss.dynamic.pwa.frontend.view.BaseCrudView;
+import works.ss.dynamic.pwa.frontend.view.category.CategoryCrudView;
+import works.ss.dynamic.pwa.frontend.view.product.ProductCrudView;
 
 /**
  * The main layout. Contains the navigation menu.
  */
 @HtmlImport("css/shared-styles.html")
 @Theme(value = Lumo.class)
-@PWA(name = "Bookstore Starter", shortName = "Bookstore")
+@PWA(name = "Spring Mongo Starter", shortName = "Spring Mongo")
 public class MainLayout extends FlexLayout implements RouterLayout {
     private Menu menu;
 
@@ -25,9 +26,10 @@ public class MainLayout extends FlexLayout implements RouterLayout {
         setClassName("main-layout");
 
         menu = new Menu();
-        //TODO iterate base entities and add crud views
-        menu.addView(SampleCrudView.class, "Product", VaadinIcon.INFO.create());
-//        menu.addView(SampleCrudView.class, SampleCrudView.VIEW_NAME,
+        //TODO iterate product entities and add crud views
+        menu.addView(CategoryCrudView.class, "Category", VaadinIcon.ARCHIVE.create());
+        menu.addView(ProductCrudView.class, "Product", VaadinIcon.FILE_O.create());
+//        menu.addView(BaseCrudView.class, BaseCrudView.VIEW_NAME,
 //                VaadinIcon.EDIT.create());
 
         add(menu);

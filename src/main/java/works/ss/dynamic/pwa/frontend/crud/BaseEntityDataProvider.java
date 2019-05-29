@@ -49,7 +49,6 @@ public class BaseEntityDataProvider extends ListDataProvider<BaseEntity> {
 
 
     private boolean passesFilter(Object object, String filterText) {
-        return object != null && object.toString().toLowerCase(Locale.ENGLISH)
-                .contains(filterText);
+        return object != null && object.toString().contains(filterText);
     }
 }

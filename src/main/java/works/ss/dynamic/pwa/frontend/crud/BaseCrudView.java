@@ -1,4 +1,4 @@
-package works.ss.dynamic.pwa.frontend.view;
+package works.ss.dynamic.pwa.frontend.crud;
 
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.KeyModifier;

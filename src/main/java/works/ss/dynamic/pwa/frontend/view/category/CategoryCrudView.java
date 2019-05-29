@@ -1,19 +1,16 @@
 package works.ss.dynamic.pwa.frontend.view.category;
 
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.Route;
 import works.ss.dynamic.pwa.backend.entity.Category;
-import works.ss.dynamic.pwa.backend.entity.Product;
 import works.ss.dynamic.pwa.frontend.MainLayout;
 import works.ss.dynamic.pwa.frontend.crud.BaseEntityDataProvider;
 import works.ss.dynamic.pwa.frontend.crud.BaseEntityGrid;
-import works.ss.dynamic.pwa.frontend.view.BaseCrudView;
+import works.ss.dynamic.pwa.frontend.crud.BaseCrudView;
 
 @Route(value = "category", layout = MainLayout.class)
 public class CategoryCrudView extends BaseCrudView

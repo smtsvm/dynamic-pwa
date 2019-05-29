@@ -8,7 +8,6 @@ import com.vaadin.flow.router.RouterLayout;
 import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
-import works.ss.dynamic.pwa.frontend.view.BaseCrudView;
 import works.ss.dynamic.pwa.frontend.view.category.CategoryCrudView;
 import works.ss.dynamic.pwa.frontend.view.product.ProductCrudView;
 

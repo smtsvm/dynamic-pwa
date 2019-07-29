@@ -34,14 +34,16 @@ public class BaseCrudView extends HorizontalLayout implements CrudListener<BaseE
     private Class clazz;
 
     public BaseCrudView() {
-        this(BaseEntity.class);
+//        this(BaseEntity.class);
+
     }
 
     public BaseCrudView(Class clazz) {
 
         this.clazz = clazz;
         add(getConfiguredCrud());
-
+        setWidth("100%");
+        setHeight("800px");
     }
 
     private Component getConfiguredCrud() {

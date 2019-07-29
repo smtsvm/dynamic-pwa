@@ -47,6 +47,8 @@ public class MainLayout extends HorizontalLayout implements RouterLayout {
         add(buttonsLayout, detailLayout);
 
         buttonsLayout.setWidth("100px");
+        setHeight("800px");
+        detailLayout.setHeight("800px");
 
 
 

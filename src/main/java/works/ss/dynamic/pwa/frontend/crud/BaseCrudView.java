@@ -1,68 +1,121 @@
 package works.ss.dynamic.pwa.frontend.crud;
 
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.KeyModifier;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.provider.DataProvider;
+import com.vaadin.flow.data.renderer.LocalDateRenderer;
 import com.vaadin.flow.router.*;
-import works.ss.dynamic.pwa.backend.entity.Product;
+import org.vaadin.crudui.crud.CrudListener;
+import org.vaadin.crudui.crud.CrudOperation;
+import org.vaadin.crudui.crud.impl.GridCrud;
+import org.vaadin.crudui.form.impl.form.factory.DefaultCrudFormFactory;
+import org.vaadin.crudui.layout.impl.HorizontalSplitCrudLayout;
+import works.ss.dynamic.pwa.backend.Registry;
+import works.ss.dynamic.pwa.backend.entity.BaseEntity;
 import works.ss.dynamic.pwa.frontend.MainLayout;
-import works.ss.dynamic.pwa.frontend.crud.BaseEntityDataProvider;
-import works.ss.dynamic.pwa.frontend.crud.BaseEntityGrid;
 
-/**
- * A view for performing create-read-update-delete operations on products.
- *
- * See also {@link BaseCrudLogic} for fetching the entity, the actual CRUD
- * operations and controlling the view based on events from outside.
- */
-@Route(value = "base", layout = MainLayout.class)
-public class BaseCrudView extends HorizontalLayout
-        implements HasUrlParameter<String> {
+import java.time.format.DateTimeFormatter;
+import java.util.Collection;
 
-    public BaseEntityGrid grid;
-    public TextField filter;
 
-    public Button newBaseEntity;
+@Route(value = "", layout = MainLayout.class)
+public class BaseCrudView extends HorizontalLayout implements CrudListener<BaseEntity> {
 
-    public BaseEntityDataProvider dataProvider;
 
+    private TextField nameFilter = new TextField();
+
+    private Class clazz;
 
     public BaseCrudView() {
+        this(BaseEntity.class);
+    }
 
+    public BaseCrudView(Class clazz) {
+
+        this.clazz = clazz;
+        add(getConfiguredCrud());
 
     }
 
-    public HorizontalLayout createTopBar() {
-        filter = new TextField();
-        filter.setPlaceholder("Filter name, availability or category");
-        // Apply the filter to grid's entity provider. TextField value is never null
-        filter.addValueChangeListener(event -> dataProvider.setFilter(event.getValue()));
-        filter.addFocusShortcut(Key.KEY_F, KeyModifier.CONTROL);
+    private Component getConfiguredCrud() {
+        GridCrud<BaseEntity> crud = new GridCrud<>(clazz, new HorizontalSplitCrudLayout());
+        crud.setCrudListener(this);
 
-        newBaseEntity = new Button("New product");
-        newBaseEntity.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        newBaseEntity.setIcon(VaadinIcon.PLUS_CIRCLE.create());
-        // CTRL+N will create a new window which is unavoidable
-        newBaseEntity.addClickShortcut(Key.KEY_N, KeyModifier.ALT);
+        DefaultCrudFormFactory<BaseEntity> formFactory = new DefaultCrudFormFactory<>(clazz);
+        crud.setCrudFormFactory(formFactory);
 
-        HorizontalLayout topLayout = new HorizontalLayout();
-        topLayout.setWidth("100%");
-        topLayout.add(filter);
-        topLayout.add(newBaseEntity);
-        topLayout.setVerticalComponentAlignment(Alignment.START, filter);
-        topLayout.expand(filter);
-        return topLayout;
+        formFactory.setUseBeanValidation(true);
+
+        formFactory.setErrorListener(e -> {
+            Notification.show("Custom error message");
+            e.printStackTrace();
+        });
+
+
+        formFactory.setDisabledProperties("id");
+
+
+        crud.getGrid().setColumnReorderingAllowed(true);
+
+
+
+
+        formFactory.setFieldCreationListener(CrudOperation.ADD, "name", f -> f.setValue("default name"));
+
+        formFactory.setButtonCaption(CrudOperation.ADD, "Add new Entity");
+        crud.setRowCountCaption("%d user(s) found");
+
+        crud.setClickRowToUpdate(true);
+        crud.setUpdateOperationVisible(false);
+
+        nameFilter.setPlaceholder("filter by name...");
+        nameFilter.addValueChangeListener(e -> crud.refreshGrid());
+        crud.getCrudLayout().addFilterComponent(nameFilter);
+
+
+
+        Button clearFilters = new Button(null, VaadinIcon.ERASER.create());
+        clearFilters.addClickListener(event -> {
+            nameFilter.clear();
+        });
+        crud.getCrudLayout().addFilterComponent(clearFilters);
+
+//        crud.setFindAllOperation(
+//                DataProvider.fromCallbacks(
+//                        query -> Registry.get().getBaseService().
+//                                UserRepository.findByNameLike(nameFilter.getValue(), groupFilter.getValue(), query.getOffset(), query.getLimit()).stream(),
+//                        query -> UserRepository.countByNameLike(nameFilter.getValue(), groupFilter.getValue()))
+//        );
+        return crud;
     }
+
 
 
 
     @Override
-    public void setParameter(BeforeEvent event,
-                             @OptionalParameter String parameter) {
+    public Collection<BaseEntity> findAll() {
+        return Registry.get().getBaseService().getAll(clazz);
+    }
+
+    @Override
+    public BaseEntity add(BaseEntity baseEntity) {
+        return Registry.get().getBaseService().saveEntity(baseEntity);
+    }
+
+    @Override
+    public BaseEntity update(BaseEntity baseEntity) {
+        return Registry.get().getBaseService().saveEntity(baseEntity);
+    }
+
+    @Override
+    public void delete(BaseEntity baseEntity) {
+        Registry.get().getBaseService().delete(clazz, baseEntity.getId());
     }
 }

@@ -37,8 +37,8 @@ public class BaseService{
         return getRelatedRepository(clazz).findById(id);
     }
 
-    public void saveEntity(BaseEntity baseEntity){
-        getRelatedRepository(baseEntity.getClass()).save(baseEntity);
+    public BaseEntity saveEntity(BaseEntity baseEntity){
+        return (BaseEntity) getRelatedRepository(baseEntity.getClass()).save(baseEntity);
     }
 
 

@@ -25,6 +25,7 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<failOnMissingWebXml>false</failOnMissingWebXml>
 		<tomcat.version>8.5.37</tomcat.version>
+		<crud.ui.version>3.9.0</crud.ui.version>
 	</properties>
 
 	<dependencies>
@@ -82,6 +83,12 @@
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
 			<version>2.5</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.vaadin.crudui</groupId>
+			<artifactId>crudui</artifactId>
+			<version>${crud.ui.version}</version>
 		</dependency>
 
 	</dependencies>

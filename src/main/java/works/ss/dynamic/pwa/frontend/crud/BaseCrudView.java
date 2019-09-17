@@ -17,6 +17,8 @@ import org.vaadin.crudui.crud.CrudOperation;
 import org.vaadin.crudui.crud.impl.GridCrud;
 import org.vaadin.crudui.form.impl.form.factory.DefaultCrudFormFactory;
 import org.vaadin.crudui.layout.impl.HorizontalSplitCrudLayout;
+import org.vaadin.crudui.layout.impl.VerticalCrudLayout;
+import org.vaadin.crudui.layout.impl.WindowBasedCrudLayout;
 import works.ss.dynamic.pwa.backend.Registry;
 import works.ss.dynamic.pwa.backend.entity.BaseEntity;
 import works.ss.dynamic.pwa.frontend.MainLayout;
@@ -43,11 +45,11 @@ public class BaseCrudView extends HorizontalLayout implements CrudListener<BaseE
         this.clazz = clazz;
         add(getConfiguredCrud());
         setWidth("100%");
-        setHeight("800px");
+        setHeight("100%");
     }
 
     private Component getConfiguredCrud() {
-        GridCrud<BaseEntity> crud = new GridCrud<>(clazz, new HorizontalSplitCrudLayout());
+        GridCrud<BaseEntity> crud = new GridCrud<>(clazz, new WindowBasedCrudLayout());
         crud.setCrudListener(this);
 
         DefaultCrudFormFactory<BaseEntity> formFactory = new DefaultCrudFormFactory<>(clazz);

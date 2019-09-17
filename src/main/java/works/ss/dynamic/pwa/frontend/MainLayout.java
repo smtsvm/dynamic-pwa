@@ -10,9 +10,12 @@ import com.vaadin.flow.router.RouterLayout;
 import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
+import works.ss.dynamic.pwa.backend.Registry;
 import works.ss.dynamic.pwa.backend.entity.Category;
 import works.ss.dynamic.pwa.backend.entity.Product;
 import works.ss.dynamic.pwa.frontend.crud.BaseCrudView;
+
+import java.util.Map;
 
 /**
  * The main layout. Contains the navigation menu.
@@ -22,27 +25,20 @@ import works.ss.dynamic.pwa.frontend.crud.BaseCrudView;
 @PWA(name = "Spring Mongo Starter", shortName = "Spring Mongo")
 public class MainLayout extends HorizontalLayout implements RouterLayout {
 
+    private final VerticalLayout detailLayout;
+
     public MainLayout() {
         setSizeFull();
         setClassName("main-layout");
 
         VerticalLayout buttonsLayout = new VerticalLayout();
-        VerticalLayout detailLayout = new VerticalLayout();
+        detailLayout = new VerticalLayout();
 
-        Button productButton = new Button("Product");
-        Button categoryButton = new Button("Category");
-        buttonsLayout.add(productButton, categoryButton);
 
-        productButton.addClickListener(e-> {
-            detailLayout.removeAll();
-            detailLayout.add(new BaseCrudView(Product.class));
+        Registry.get().getEntityRepositoryMap().keySet().forEach(e-> {
+            buttonsLayout.add(createEntityClassButton(e));
         });
 
-
-        categoryButton.addClickListener(e-> {
-            detailLayout.removeAll();
-            detailLayout.add(new BaseCrudView(Category.class));
-        });
 
         add(buttonsLayout, detailLayout);
 
@@ -52,6 +48,15 @@ public class MainLayout extends HorizontalLayout implements RouterLayout {
 
 
 
+    }
+
+    private Button createEntityClassButton(Class clazz) {
+        Button entityButton = new Button(clazz.getSimpleName());
+        entityButton.addClickListener(e-> {
+            detailLayout.removeAll();
+            detailLayout.add(new BaseCrudView(clazz));
+        });
+        return entityButton;
     }
 
     @Override

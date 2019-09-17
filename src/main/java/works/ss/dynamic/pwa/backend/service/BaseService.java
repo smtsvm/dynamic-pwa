@@ -1,8 +1,10 @@
 package works.ss.dynamic.pwa.backend.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
+import works.ss.dynamic.pwa.backend.Registry;
 import works.ss.dynamic.pwa.backend.entity.BaseEntity;
 import works.ss.dynamic.pwa.backend.entity.Product;
 import works.ss.dynamic.pwa.backend.repository.CategoryRepository;
@@ -16,10 +18,11 @@ public class BaseService{
 
     @Autowired
     private ProductRepository productRepository;
-
-
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
+    private ApplicationContext applicationContext;
 
     public void delete(Class clazz, String id){
         getRelatedRepository(clazz).deleteById(id);
@@ -43,9 +46,8 @@ public class BaseService{
 
 
     private MongoRepository getRelatedRepository(Class clazz) {
-        if(clazz == Product.class)
-            return productRepository;
-        else
-            return categoryRepository;
+        Class clazzRepo = Registry.get().getEntityRepositoryMap().get(clazz);
+        return (MongoRepository) applicationContext.getBean(clazzRepo);
+
     }
 }

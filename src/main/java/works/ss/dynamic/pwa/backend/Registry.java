@@ -1,7 +1,6 @@
 package works.ss.dynamic.pwa.backend;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Component;
 import works.ss.dynamic.pwa.backend.service.BaseService;
 import works.ss.dynamic.pwa.backend.service.CategoryService;

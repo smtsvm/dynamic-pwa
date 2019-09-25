@@ -3,18 +3,8 @@ package works.ss.dynamic.pwa.backend.data;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import works.ss.dynamic.pwa.backend.entity.Availability;
-import works.ss.dynamic.pwa.backend.entity.Category;
-import works.ss.dynamic.pwa.backend.entity.Product;
+import works.ss.dynamic.pwa.backend.entity.*;
 import works.ss.dynamic.pwa.backend.service.BaseService;
-import works.ss.dynamic.pwa.backend.service.CategoryService;
-import works.ss.dynamic.pwa.backend.service.ProductService;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
 
 @Component
 public class DataGenerator implements InitializingBean {
@@ -22,10 +12,10 @@ public class DataGenerator implements InitializingBean {
     @Autowired
     private BaseService baseService;
 
-
     @Override
     public void afterPropertiesSet() throws Exception {
-//
+
+
 //        Random random = new Random();
 //        List<Category> categoryList = new ArrayList<>();
 //        for(int i = 0 ; i < 10; i++) {

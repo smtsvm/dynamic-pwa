@@ -1,29 +1,21 @@
 package works.ss.dynamic.pwa.frontend.crud;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.Key;
-import com.vaadin.flow.component.KeyModifier;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.provider.DataProvider;
-import com.vaadin.flow.data.renderer.LocalDateRenderer;
-import com.vaadin.flow.router.*;
+import com.vaadin.flow.router.Route;
 import org.vaadin.crudui.crud.CrudListener;
 import org.vaadin.crudui.crud.CrudOperation;
 import org.vaadin.crudui.crud.impl.GridCrud;
 import org.vaadin.crudui.form.impl.form.factory.DefaultCrudFormFactory;
-import org.vaadin.crudui.layout.impl.HorizontalSplitCrudLayout;
-import org.vaadin.crudui.layout.impl.VerticalCrudLayout;
 import org.vaadin.crudui.layout.impl.WindowBasedCrudLayout;
 import works.ss.dynamic.pwa.backend.Registry;
 import works.ss.dynamic.pwa.backend.entity.BaseEntity;
 import works.ss.dynamic.pwa.frontend.MainLayout;
 
-import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 
 
@@ -36,7 +28,6 @@ public class BaseCrudView extends HorizontalLayout implements CrudListener<BaseE
     private Class clazz;
 
     public BaseCrudView() {
-//        this(BaseEntity.class);
 
     }
 
@@ -52,7 +43,7 @@ public class BaseCrudView extends HorizontalLayout implements CrudListener<BaseE
         GridCrud<BaseEntity> crud = new GridCrud<>(clazz, new WindowBasedCrudLayout());
         crud.setCrudListener(this);
 
-        DefaultCrudFormFactory<BaseEntity> formFactory = new DefaultCrudFormFactory<>(clazz);
+        CustomCrudFormFactory<BaseEntity> formFactory = new CustomCrudFormFactory<>(clazz);
         crud.setCrudFormFactory(formFactory);
 
         formFactory.setUseBeanValidation(true);
@@ -62,8 +53,6 @@ public class BaseCrudView extends HorizontalLayout implements CrudListener<BaseE
             e.printStackTrace();
         });
 
-
-        formFactory.setDisabledProperties("id");
 
 
         crud.getGrid().setColumnReorderingAllowed(true);

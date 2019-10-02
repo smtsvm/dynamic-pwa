@@ -10,6 +10,7 @@ import com.vaadin.flow.router.Route;
 import org.vaadin.crudui.crud.CrudListener;
 import org.vaadin.crudui.crud.CrudOperation;
 import org.vaadin.crudui.crud.impl.GridCrud;
+import org.vaadin.crudui.form.CrudFormFactory;
 import org.vaadin.crudui.layout.impl.WindowBasedCrudLayout;
 import works.ss.dynamic.pwa.backend.Registry;
 import works.ss.dynamic.pwa.backend.entity.BaseEntity;
@@ -29,7 +30,6 @@ public class BaseCrudView extends HorizontalLayout implements CrudListener<BaseE
 
     private Class clazz;
     private GridCrud<BaseEntity> crud;
-    private CustomCrudFormFactory<BaseEntity> formFactory;
 
     public BaseCrudView() {
 
@@ -47,24 +47,15 @@ public class BaseCrudView extends HorizontalLayout implements CrudListener<BaseE
         crud = new GridCrud<>(clazz, new WindowBasedCrudLayout());
         crud.setCrudListener(this);
 
-        formFactory = new CustomCrudFormFactory<>(clazz);
-        crud.setCrudFormFactory(formFactory);
-
-        formFactory.setErrorListener(e -> {
-            Notification.show("Custom error message");
-            e.printStackTrace();
-        });
 
         manipulateColumns();
 
         crud.getGrid().setColumnReorderingAllowed(true);
 
 
-
-        formFactory.setButtonCaption(CrudOperation.ADD, "Add new Entity");
         crud.setRowCountCaption("%d found");
 
-        formFactory.setDisabledProperties("id");
+        crud.getCrudFormFactory().setDisabledProperties("id");
 
         crud.setUpdateOperationVisible(true);
 

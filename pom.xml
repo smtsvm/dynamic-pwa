@@ -26,6 +26,8 @@
 		<failOnMissingWebXml>false</failOnMissingWebXml>
 		<tomcat.version>8.5.37</tomcat.version>
 		<crud.ui.version>4.0.1</crud.ui.version>
+		<lombok.version>1.18.10</lombok.version>
+		<multiselect.combobox.version>2.0.0</multiselect.combobox.version>
 	</properties>
 
 	<dependencies>
@@ -91,7 +93,16 @@
 			<version>${crud.ui.version}</version>
 		</dependency>
 
+
+		<!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>${lombok.version}</version>
+		</dependency>
+
 	</dependencies>
+
 
 	<dependencyManagement>
 		<dependencies>
@@ -117,6 +128,12 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<!-- https://mvnrepository.com/artifact/com.vaadin/flow-maven-plugin -->
+					<groupId>com.vaadin</groupId>
+					<artifactId>flow-maven-plugin</artifactId>
+
 			</plugin>
 		</plugins>
 	</build>

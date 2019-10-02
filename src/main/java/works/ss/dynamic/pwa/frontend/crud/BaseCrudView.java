@@ -10,13 +10,15 @@ import com.vaadin.flow.router.Route;
 import org.vaadin.crudui.crud.CrudListener;
 import org.vaadin.crudui.crud.CrudOperation;
 import org.vaadin.crudui.crud.impl.GridCrud;
-import org.vaadin.crudui.form.impl.form.factory.DefaultCrudFormFactory;
 import org.vaadin.crudui.layout.impl.WindowBasedCrudLayout;
 import works.ss.dynamic.pwa.backend.Registry;
 import works.ss.dynamic.pwa.backend.entity.BaseEntity;
 import works.ss.dynamic.pwa.frontend.MainLayout;
+import works.ss.dynamic.pwa.frontend.crud.provider.BaseEntityCrudProvider;
 
+import java.lang.reflect.Field;
 import java.util.Collection;
+import java.util.List;
 
 
 @Route(value = "", layout = MainLayout.class)
@@ -26,6 +28,8 @@ public class BaseCrudView extends HorizontalLayout implements CrudListener<BaseE
     private TextField nameFilter = new TextField();
 
     private Class clazz;
+    private GridCrud<BaseEntity> crud;
+    private CustomCrudFormFactory<BaseEntity> formFactory;
 
     public BaseCrudView() {
 
@@ -40,37 +44,37 @@ public class BaseCrudView extends HorizontalLayout implements CrudListener<BaseE
     }
 
     private Component getConfiguredCrud() {
-        GridCrud<BaseEntity> crud = new GridCrud<>(clazz, new WindowBasedCrudLayout());
+        crud = new GridCrud<>(clazz, new WindowBasedCrudLayout());
         crud.setCrudListener(this);
 
-        CustomCrudFormFactory<BaseEntity> formFactory = new CustomCrudFormFactory<>(clazz);
+        formFactory = new CustomCrudFormFactory<>(clazz);
         crud.setCrudFormFactory(formFactory);
-
-        formFactory.setUseBeanValidation(true);
 
         formFactory.setErrorListener(e -> {
             Notification.show("Custom error message");
             e.printStackTrace();
         });
 
-
+        manipulateColumns();
 
         crud.getGrid().setColumnReorderingAllowed(true);
 
 
 
-
-        formFactory.setFieldCreationListener(CrudOperation.ADD, "name", f -> f.setValue("default name"));
-
         formFactory.setButtonCaption(CrudOperation.ADD, "Add new Entity");
-        crud.setRowCountCaption("%d user(s) found");
+        crud.setRowCountCaption("%d found");
 
-        crud.setClickRowToUpdate(true);
-        crud.setUpdateOperationVisible(false);
+        formFactory.setDisabledProperties("id");
+
+        crud.setUpdateOperationVisible(true);
 
         nameFilter.setPlaceholder("filter by name...");
         nameFilter.addValueChangeListener(e -> crud.refreshGrid());
         crud.getCrudLayout().addFilterComponent(nameFilter);
+
+
+
+
 
 
 
@@ -79,18 +83,11 @@ public class BaseCrudView extends HorizontalLayout implements CrudListener<BaseE
             nameFilter.clear();
         });
         crud.getCrudLayout().addFilterComponent(clearFilters);
+        crud.getGrid().setPageSize(10);
+        crud.setClickRowToUpdate(false);
 
-//        crud.setFindAllOperation(
-//                DataProvider.fromCallbacks(
-//                        query -> Registry.get().getBaseService().
-//                                UserRepository.findByNameLike(nameFilter.getValue(), groupFilter.getValue(), query.getOffset(), query.getLimit()).stream(),
-//                        query -> UserRepository.countByNameLike(nameFilter.getValue(), groupFilter.getValue()))
-//        );
         return crud;
     }
-
-
-
 
     @Override
     public Collection<BaseEntity> findAll() {
@@ -110,5 +107,36 @@ public class BaseCrudView extends HorizontalLayout implements CrudListener<BaseE
     @Override
     public void delete(BaseEntity baseEntity) {
         Registry.get().getBaseService().delete(clazz, baseEntity.getId());
+    }
+
+    private void manipulateColumns() {
+        for(Field field : clazz.getDeclaredFields()) {
+            if(field.getType() == Boolean.class || field.getType() == boolean.class) {
+                crud.getGrid().getColumnByKey(field.getName()).setVisible(false);
+            }
+            if(field.getType() == List.class) {
+                crud.getGrid().getColumnByKey(field.getName()).setVisible(false);
+            }
+
+
+            if(field.getType().getSuperclass() != null && field.getType().getSuperclass() == BaseEntity.class) {
+                field.getName();
+                crud.getCrudFormFactory().setFieldProvider(field.getName(), new BaseEntityCrudProvider(Registry.get().getBaseService().getAll(field.getType())) );
+                crud.getGrid().getColumnByKey(field.getName()).setVisible(false);
+            }
+
+        }
+
+        for(Field field : clazz.getSuperclass().getDeclaredFields()) {
+            if(field.getName().equals("id")) {
+                crud.getGrid().getColumnByKey("id").setVisible(false);
+            }
+            if(field.getType() == Boolean.class || field.getType() == boolean.class) {
+                if(crud.getGrid().getColumnByKey(field.getName().replace("is","").toLowerCase()) != null) {
+                    crud.getGrid().getColumnByKey(field.getName().replace("is","").toLowerCase()).setVisible(false);
+                }
+            }
+
+        }
     }
 }

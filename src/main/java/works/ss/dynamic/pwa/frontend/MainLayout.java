@@ -11,12 +11,9 @@ import com.vaadin.flow.theme.lumo.Lumo;
 import works.ss.dynamic.pwa.backend.Registry;
 import works.ss.dynamic.pwa.frontend.crud.BaseCrudView;
 
-/**
- * The main layout. Contains the navigation menu.
- */
 @HtmlImport("css/shared-styles.html")
 @Theme(value = Lumo.class, variant = "dark")
-@PWA(name = "Spring Mongo Starter", shortName = "Spring Mongo")
+@PWA(name = "Vaadin14 Skeleton", shortName = "Vaadin14 Skeleton")
 public class MainLayout extends AppLayout implements RouterLayout {
 
 
